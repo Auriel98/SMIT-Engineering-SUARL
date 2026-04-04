@@ -1,0 +1,18 @@
+.realisations {
+  background: var(--navy-dark);
+  text-align: center;
+}
+
+.realisations-coming {
+  margin-top: 3rem;
+  padding: 4rem 2rem;
+  border: 1px dashed rgba(42, 95, 143, 0.5);
+  border-radius: 4px;
+}
+
+.realisations-coming p {
+  font-size: 1rem;
+  color: var(--gray-mid);
+  margin-bottom: 1.5rem;
+  line-height: 1.7;
+}

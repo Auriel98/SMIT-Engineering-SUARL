@@ -1,0 +1,70 @@
+.apropos {
+  background: var(--white);
+}
+
+.apropos-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: start;
+}
+
+.apropos-text p {
+  color: #4a5a6a;
+  line-height: 1.8;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+}
+
+.valeurs-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.valeur-card {
+  background: var(--gray-light);
+  border-left: 3px solid var(--steel);
+  padding: 1rem 1.25rem;
+  border-radius: 0 4px 4px 0;
+  transition: border-color 0.25s;
+}
+
+.valeur-card:hover {
+  border-color: var(--accent-gold);
+}
+
+.valeur-card.full {
+  grid-column: span 2;
+}
+
+.valeur-card h4 {
+  font-family: 'Oswald', sans-serif;
+  font-size: 14px;
+  letter-spacing: 1px;
+  color: var(--navy);
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.valeur-card p {
+  font-size: 13px;
+  color: #6a7a8a;
+}
+
+@media (max-width: 900px) {
+  .apropos-grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .valeurs-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .valeur-card.full {
+    grid-column: span 1;
+  }
+}
