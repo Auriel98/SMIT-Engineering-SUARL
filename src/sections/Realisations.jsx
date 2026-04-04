@@ -17,7 +17,7 @@ export default function Realisations() {
           <p>
             Notre portfolio de réalisations est en cours de constitution.<br />
             Nous vous invitons à nous contacter directement pour en savoir plus
-            sur nos références et projets réalisés au Gabon et en Afrique Centrale.
+            sur nos références et projets réalisés au Gabon.
           </p>
           <button className="btn btn-outline" onClick={() => scrollTo('#contact')}>
             Demander Nos Références
