@@ -1,14 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './Navbar.css';
 
-const LogoIcon = () => (
-  <svg viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg" width="38" height="38">
-    <polygon points="19,2 36,34 2,34" fill="#2a5f8f" />
-    <polygon points="19,10 30,30 8,30" fill="#3a7ab5" opacity="0.6" />
-    <polygon points="19,18 25,28 13,28" fill="#c8a84b" />
-  </svg>
-);
-
 const navLinks = [
   { href: '#apropos', label: 'À Propos' },
   { href: '#missions', label: 'Missions' },
@@ -37,7 +29,7 @@ export default function Navbar() {
   return (
     <nav className={`navbar ${scrolled ? 'scrolled' : ''}`}>
       <div className="nav-logo">
-        <LogoIcon />
+        <img src="/Logo_SMIT.png" alt="SMIT Logo" className="nav-logo-img" />
         <div className="nav-logo-text">
           <span className="logo-main">SMIT ENGINEERING</span>
           <span className="logo-sub">SUARL · GABON</span>
@@ -52,6 +44,8 @@ export default function Navbar() {
             </a>
           </li>
         ))}
+
+        {/* ✅ Correction ici */}
         <li>
           <a
             href="#contact"
