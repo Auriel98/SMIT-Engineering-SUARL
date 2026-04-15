@@ -1,5 +1,12 @@
-import React, { useState } from 'react';
+// Contact.jsx
+import React, { useState, useRef } from 'react';
+import emailjs from '@emailjs/browser';
 import './Contact.css';
+
+// 🔧 REMPLACEZ CES VALEURS PAR LES VÔTRES
+const EMAILJS_SERVICE_ID  = 'service_zt3123f';
+const EMAILJS_TEMPLATE_ID = 'template_2nr57ds';
+const EMAILJS_PUBLIC_KEY  = 'nf-SuQ4_H8NmaK-kc';
 
 const coordonnees = [
   {
@@ -13,7 +20,7 @@ const coordonnees = [
   },
   {
     label: 'Téléphones',
-    value: '060 40 21 35',
+    value: '+241 60 40 21 35',
     icon: (
       <svg viewBox="0 0 24 24" strokeWidth="1.5" fill="none" stroke="currentColor">
         <path d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
@@ -22,8 +29,8 @@ const coordonnees = [
   },
   {
     label: 'Email',
-    value: 'smit.engineering@gmail.com',
-    href: 'mailto:smit.engineering@gmail.com',
+    value: 'contact@smitengineering.ga', 
+    href: 'mailto:contact@smitengineering.ga',
     icon: (
       <svg viewBox="0 0 24 24" strokeWidth="1.5" fill="none" stroke="currentColor">
         <path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
@@ -31,12 +38,12 @@ const coordonnees = [
     ),
   },
   {
-    label: 'Site Web',
-    value: 'www.smitengineering.com',
-    href: 'http://www.smitengineering.com',
+    label: 'Email',
+    value: 'directgene@smitengineering.ga',
+    href: 'mailto:directgene@smitengineering.ga',
     icon: (
       <svg viewBox="0 0 24 24" strokeWidth="1.5" fill="none" stroke="currentColor">
-        <path d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9" />
+        <path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
       </svg>
     ),
   },
@@ -53,6 +60,8 @@ const coordonnees = [
 ];
 
 export default function Contact() {
+  const formRef = useRef(null);
+
   const [form, setForm] = useState({
     prenom: '',
     nom: '',
@@ -60,20 +69,54 @@ export default function Contact() {
     objet: '',
     message: '',
   });
-  const [sent, setSent] = useState(false);
+
+  const [status, setStatus] = useState('idle'); // 'idle' | 'sending' | 'success' | 'error'
+  const [errorMsg, setErrorMsg] = useState('');
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = () => {
-    if (!form.email || !form.message) return;
-    // In production, connect to a backend/email API
-    console.log('Form submitted:', form);
-    setSent(true);
-    setTimeout(() => setSent(false), 4000);
-    setForm({ prenom: '', nom: '', email: '', objet: '', message: '' });
+  const handleSubmit = async () => {
+    if (!form.email || !form.message) {
+      setErrorMsg('Veuillez remplir au moins le champ Email et Message.');
+      return;
+    }
+
+    setStatus('sending');
+    setErrorMsg('');
+
+    // Les variables doivent correspondre aux {{variables}} de votre template EmailJS
+    const templateParams = {
+      from_prenom:  form.prenom,
+      from_nom:     form.nom,
+      from_email:   form.email,
+      objet:        form.objet,
+      message:      form.message,
+      to_email:     'smit.engineering@gmail.com', // destinataire
+    };
+
+    try {
+      await emailjs.send(
+        EMAILJS_SERVICE_ID,
+        EMAILJS_TEMPLATE_ID,
+        templateParams,
+        EMAILJS_PUBLIC_KEY
+      );
+
+      setStatus('success');
+      setForm({ prenom: '', nom: '', email: '', objet: '', message: '' });
+
+      setTimeout(() => setStatus('idle'), 5000);
+    } catch (error) {
+      console.error('EmailJS error:', error);
+      setStatus('error');
+      setErrorMsg("Une erreur s'est produite. Veuillez réessayer.");
+      setTimeout(() => setStatus('idle'), 5000);
+    }
   };
+
+  const isDisabled = status === 'sending';
 
   return (
     <section id="contact" className="contact">
@@ -83,15 +126,25 @@ export default function Contact() {
         <div className="divider" />
         <div className="contact-grid">
 
+          {/* ── Coordonnées ── */}
           <div className="contact-info">
             <h3>Coordonnées</h3>
-            {coordonnees.map((c) => (
-              <div key={c.label} className="contact-item">
+            {coordonnees.map((c, i) => (
+              <div key={i} className="contact-item">
                 <div className="contact-icon">{c.icon}</div>
                 <div className="contact-item-text">
                   <p className="contact-item-label">{c.label}</p>
                   {c.href ? (
-                    <p><a href={c.href} target={c.href.startsWith('http') ? '_blank' : undefined} rel="noreferrer">{c.value}</a></p>
+                    <p>
+                      <a
+
+                        href={c.href}
+                        target={c.href.startsWith('http') ? '_blank' : undefined}
+                        rel="noreferrer"
+                      >
+                        {c.value}
+                      </a>
+                    </p>
                   ) : (
                     <p>{c.value}</p>
                   )}
@@ -100,9 +153,11 @@ export default function Contact() {
             ))}
           </div>
 
+          {/* ── Formulaire ── */}
           <div className="contact-form-wrapper">
             <h3>Envoyez-Nous un Message</h3>
-            <div className="contact-form">
+
+            <div className="contact-form" ref={formRef}>
               <div className="form-row">
                 <div className="form-group">
                   <label htmlFor="prenom">Prénom</label>
@@ -113,6 +168,7 @@ export default function Contact() {
                     placeholder="Votre prénom"
                     value={form.prenom}
                     onChange={handleChange}
+                    disabled={isDisabled}
                   />
                 </div>
                 <div className="form-group">
@@ -124,11 +180,13 @@ export default function Contact() {
                     placeholder="Votre nom"
                     value={form.nom}
                     onChange={handleChange}
+                    disabled={isDisabled}
                   />
                 </div>
               </div>
+
               <div className="form-group">
-                <label htmlFor="email">Email</label>
+                <label htmlFor="email">Email *</label>
                 <input
                   id="email"
                   name="email"
@@ -136,8 +194,11 @@ export default function Contact() {
                   placeholder="votre@email.com"
                   value={form.email}
                   onChange={handleChange}
+                  disabled={isDisabled}
+                  required
                 />
               </div>
+
               <div className="form-group">
                 <label htmlFor="objet">Objet</label>
                 <select
@@ -145,26 +206,54 @@ export default function Contact() {
                   name="objet"
                   value={form.objet}
                   onChange={handleChange}
+                  disabled={isDisabled}
                 >
                   <option value="">-- Sélectionnez un sujet --</option>
-                  <option value="etude">Étude de projet</option>
-                  <option value="devis">Demande de devis</option>
-                  <option value="partenariat">Partenariat</option>
-                  <option value="autre">Autre</option>
+                  <option value="Étude de projet">Étude de projet</option>
+                  <option value="Demande de devis">Demande de devis</option>
+                  <option value="Partenariat">Partenariat</option>
+                  <option value="Autre">Autre</option>
                 </select>
               </div>
+
               <div className="form-group">
-                <label htmlFor="message">Message</label>
+                <label htmlFor="message">Message *</label>
                 <textarea
                   id="message"
                   name="message"
                   placeholder="Décrivez votre projet ou votre demande..."
                   value={form.message}
                   onChange={handleChange}
+                  disabled={isDisabled}
+                  required
                 />
               </div>
-              <button type="button" className="btn-submit" onClick={handleSubmit}>
-                {sent ? '✓ Message Envoyé' : 'Envoyer le Message'}
+
+              {/* Messages de retour */}
+              {errorMsg && (
+                <p className="form-feedback form-error">{errorMsg}</p>
+              )}
+              {status === 'success' && (
+                <p className="form-feedback form-success">
+                  ✓ Votre message a bien été envoyé !
+                </p>
+              )}
+              {status === 'error' && !errorMsg && (
+                <p className="form-feedback form-error">
+                  Une erreur s'est produite. Veuillez réessayer.
+                </p>
+              )}
+
+              <button
+                type="button"
+                className={`btn-submit ${status === 'sending' ? 'btn-loading' : ''} ${status === 'success' ? 'btn-success' : ''}`}
+                onClick={handleSubmit}
+                disabled={isDisabled}
+              >
+                {status === 'sending' && '⏳ Envoi en cours...'}
+                {status === 'success' && '✓ Message Envoyé'}
+                {status === 'error'   && '✗ Échec — Réessayer'}
+                {status === 'idle'    && 'Envoyer le Message'}
               </button>
             </div>
           </div>
